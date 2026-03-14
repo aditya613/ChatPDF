@@ -1,3 +1,5 @@
+#instead of openai api we are using local ollama, so we need to change the imports and the llm initialization
+
 import os
 import re
 from typing import Dict, List, Tuple
@@ -23,6 +25,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from htmlTemplates import bot_template, css, user_template
 from langchain_core.stores import InMemoryStore
+from langchain_community.chat_models import ChatOllama
 
 custom_template = """Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language.
 Chat History:
@@ -74,10 +77,8 @@ INSURANCE_FEATURE_PATTERNS = {
 }
 
 
-def get_openai_llm() -> ChatOpenAI:
-    model_name = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-    temperature = float(os.getenv("OPENAI_TEMPERATURE", "0.1"))
-    return ChatOpenAI(model=model_name, temperature=temperature)
+def get_llm():
+    return ChatOllama(model="llama3", temperature=0.1)
 
 
 def validate_config() -> Tuple[bool, str]:

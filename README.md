@@ -1,26 +1,28 @@
-# PDF Intelligence System with Retrieval Augmented Generation (RAG)
+# Insurance Policy RAG System
 
 ## Overview
 
-The goal of this project is to create a user-centric and intelligent system that enhances information retrieval from PDF documents through natural language queries. The project focuses on streamlining the user experience by developing an intuitive interface, allowing users to interact with PDF content using language they are comfortable with. To achieve this, we leverage the Retrieval Augmented Generation (RAG) methodology introduced by Meta AI researchers.
+This project provides a robust Retrieval Augmented Generation (RAG) system focused on insurance policy documents. It supports:
 
-
-https://github.com/ArmaanSeth/ChatPDF/assets/99117431/2500f636-c66d-46ad-bb68-1d55f04ce753
+- conversational Q&A over one or more insurance PDFs,
+- focused extraction of policy information like inclusions/exclusions,
+- detection of important features such as room rent limits, ICU limits, zero dep cover, waiting periods, co-pay, deductibles, and sub-limits,
+- citation-friendly answers grounded in retrieved chunks.
 
 
 ## Retrieval Augmented Generation (RAG)
 
 ### Introduction
 
-RAG is a method designed to address knowledge-intensive tasks, particularly in information retrieval. It combines an information retrieval component with a text generator model to achieve adaptive and efficient knowledge processing. Unlike traditional methods that require retraining the entire model for knowledge updates, RAG allows for fine-tuning and modification of internal knowledge without extensive retraining.
+RAG combines a retriever (vector search over your policy text) and a generator (LLM) to produce answers grounded in your uploaded documents.
 
 ### Workflow
 
-1. **Input**: RAG takes multiple pdf as input.
-2. **VectoreStore**: The pdf's are then converted to vectorstore using FAISS and all-MiniLM-L6-v2 Embeddings model from Hugging Face.
-3. **Memory**: Conversation buffer memory is used to maintain a track of previous conversation which are fed to the llm model along with the user query.
-4. **Text Generation with GPT-3.5 Turbo**: The embedded input is fed to the GPT-3.5 Turbo model from the OpenAI API, which produces the final output.
-5. **User Interface**: Streamlit is used to create the interface for the application.
+1. **PDF Input**: Upload one or more policy PDFs.
+2. **Chunking + Metadata**: Text is split with overlap and tagged with source/page metadata.
+3. **Vector Index**: Chunks are embedded with all-MiniLM-L6-v2 and indexed with FAISS.
+4. **Conversational Retrieval**: Questions are answered through retrieval + LLM generation.
+5. **Policy Extraction Mode**: A dedicated extraction flow summarizes critical insurance terms and constraints.
 
 ### Benefits
 
@@ -30,15 +32,17 @@ RAG is a method designed to address knowledge-intensive tasks, particularly in i
 
 ## Project Features
 
-1. **User-friendly Interface**: An intuitive interface designed to accommodate natural language queries, simplifying the interaction with PDF documents.
-
-2. **Seamless Navigation**: The system streamlines information retrieval, reducing complexity and enhancing the overall user experience.
+1. **Insurance-specific extraction** for inclusions, exclusions, room rent, zero dep, waiting periods, co-pay, deductibles, and sub-limits.
+2. **RAG summary with citations** to source pages.
+3. **Pattern-based validation layer** for quick keyword hit detection alongside LLM output.
+4. **Environment-driven OpenAI configuration** via `.env`.
+5. **Streamlit UI** with separate tabs for Q&A and feature extraction.
 
 ## Getting Started
 
 To use the PDF Intelligence System:
 
-1. Clone the repository to your local machine.
+1. Clone the repository.
    ```bash
    git clone https://github.com/ArmaanSeth/ChatPDF.git
    ```
@@ -48,25 +52,28 @@ To use the PDF Intelligence System:
    pip install -r requirements.txt
    ```
 
-3. Run the application.
+3. Add your OpenAI key in `.env`.
+
+   Example:
+
+   ```env
+   OPENAI_API_KEY=your_openai_api_key_here
+   OPENAI_MODEL=gpt-4o-mini
+   OPENAI_TEMPERATURE=0.1
+   ```
+
+4. Run the application.
    ```bash
    streamlit run app.py
    ```
 
-4. Open your browser and navigate to `http://localhost:8000` to access the user interface.
-
-## Contributing
-
-We welcome contributions to enhance the PDF Intelligence System. If you're interested in contributing, please follow our [Contribution Guidelines](CONTRIBUTING.md).
+5. Open your browser and navigate to `http://localhost:8501`.
 
 ## License
 
 This project is licensed under the [Apache License](LICENSE).
 
-## Acknowledgments
+## Notes
 
-We would like to express our gratitude to the Hugging Face community for the all-MiniLM-L6-v2 Embeddings model, and OpenAI for providing the GPT-3.5 Turbo model through their API.
-
----
-
-Feel free to explore and enhance the capabilities of the PDF Intelligence System. Happy querying!
+- Keep `.env` private and never commit real API keys.
+- If extraction quality needs improvement for your policy format, increase retriever depth (`k` and `fetch_k`) in [app.py](app.py).
